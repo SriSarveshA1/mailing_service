@@ -47,25 +47,54 @@ export async function authenticateUser(code: string) {
   await setValueToCache(refreshTokenKey, refreshToken);
 }
 
-export async function getMails(
-  emailId: string,
-  maxCountMail: string
-) {
-    let token:string;
-    const accessTokenKey = `access_token_${emailId}`;
-    let accessToken = await getValueFromCache(accessTokenKey);
+export async function getMails(emailId: string, maxCountMail: string | number) {
+  const accessTokenKey = `access_token_${emailId}`;
+  let accessToken = await getValueFromCache(accessTokenKey);
 
-    if(!accessToken){
-
-        console.log("Getting access token from the refresh token");
-        // if no access token is present use the refresh token to get the access token
-        const refreshTokenKey = `refresh_token_${emailId}`;
-        const refreshToken = await getValueFromCache(refreshTokenKey);
-
-        accessToken = await oAuthClient.getAccessToken();
-     
-
-        // if no refresh token is present then redirect to /gmail/auth
+  if (!accessToken) {
+    console.log("Getting access token from the refresh token");
+    // if no access token is present use the refresh token to get the access token
+    const refreshTokenKey = `refresh_token_${emailId}`;
+    const refreshToken = await getValueFromCache(refreshTokenKey);
+    if (!refreshToken) {
+      // if no refresh token is present then redirect to /gmail/auth
+      return false;
     }
+    accessToken = await oAuthClient.getAccessToken();
+    if (accessToken) {
+      await setValueToCache(accessTokenKey, accessToken);
+    }
+  }
 
+  const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages?maxResults=${maxCountMail}`;
+
+  const response = await makeAxiosCall(GET_METHOD, url, accessToken);
+
+  return response.data;
+}
+
+export async function getSpecificMail(emailId: string,messageId:string) {
+  const accessTokenKey = `access_token_${emailId}`;
+  let accessToken = await getValueFromCache(accessTokenKey);
+
+  if (!accessToken) {
+    console.log("Getting access token from the refresh token");
+    // if no access token is present use the refresh token to get the access token
+    const refreshTokenKey = `refresh_token_${emailId}`;
+    const refreshToken = await getValueFromCache(refreshTokenKey);
+    if (!refreshToken) {
+      // if no refresh token is present then redirect to /gmail/auth
+      return false;
+    }
+    accessToken = await oAuthClient.getAccessToken();
+    if (accessToken) {
+      await setValueToCache(accessTokenKey, accessToken);
+    }
+  }
+
+  const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages/${messageId}`;
+
+  const response = await makeAxiosCall(GET_METHOD, url, accessToken);
+
+  return response.data;
 }

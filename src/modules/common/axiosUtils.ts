@@ -3,7 +3,7 @@ import axios from "axios";
 export async function makeAxiosCall(
   method: string,
   url: string,
-  accessToken: string
+  accessToken: any
 ) {
   const config = {
     method,

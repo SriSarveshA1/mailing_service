@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 
-const client = new Redis({
+export const client = new Redis({
   host: process.env.REDIS_HOST,
   port: Number(process.env.REDIS_PORT),
   maxRetriesPerRequest: null,
