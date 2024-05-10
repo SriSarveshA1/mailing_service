@@ -11,7 +11,7 @@ const client = new Redis({
 export const setValueToCache = async (key: string, value: string) => {
   const cacheValue = JSON.stringify(value);
   let setCachedValue;
-  setCachedValue = await client.set(key, cacheValue, "EX", 3600);
+  setCachedValue = await client.set(key, cacheValue, "EX", Number(process.env.TOKEN_EXPIRY));
 
   return setCachedValue;
 };
