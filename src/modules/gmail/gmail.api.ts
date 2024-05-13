@@ -3,15 +3,23 @@ import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
 import {
   authenticateUser,
+  getMailFromMessageId,
   getMails,
-  getSpecificMail,
+  getRefreshToken,
   returnRedirectAuthUrl,
+  sendEmailInQueue,
 } from "./gmail.provider";
+import { parseMailContent } from "../common/commonUtils";
+import {
+  getEmailIdFromToken,
+  validateAccessToken,
+} from "./middleware/oAuthMiddleware";
+import { RequestWithAccessTokenAndEmail } from "../../types";
 require("dotenv").config();
 
 export const gmailRouter = express.Router();
 
-gmailRouter.get("/gmail/auth", async (req, res) => {
+gmailRouter.get("/auth", async (req, res) => {
   try {
     const authUrl = returnRedirectAuthUrl();
     res.redirect(authUrl);
@@ -21,79 +29,120 @@ gmailRouter.get("/gmail/auth", async (req, res) => {
   }
 });
 
-gmailRouter.get("/gmail/auth/callback", async (req, res) => {
+gmailRouter.get("/auth/callback", async (req, res) => {
   try {
     const code = String(req.query.code);
-    await authenticateUser(code);
-    res.end("User authenticated successfully");
+    const tokens = await authenticateUser(code);
+    return res.status(200).json(tokens);
   } catch (err) {
     console.log(err);
     return res.status(500).send("Error during token generation");
   }
 });
 
-gmailRouter.get("/mails", async (req, res) => {
-  try {
-    const maxCountMail = req.query.maxCountMail
-      ? Number(req.query.maxCountMail)
-      : 50;
+gmailRouter.get("/auth/getAccessToken", async (req, res) => {
+  // Get access token from refresh token
 
-    if (!req.query.emailId) {
-      return res.status(400).send("Please provide a valid emailId");
-    }
+  let refresh_token = req.query.refresh_token;
 
-    const emailId = String(req.query.emailId);
-    const mails = await getMails(emailId, maxCountMail);
-    if (!mails) {
-      // if no refresh token is present so we need to login again
-      return res.redirect("/google/gmail/auth");
-    }
-
-    res.send(mails);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error while getting mails for the provided emailId");
+  if (!refresh_token) {
+    // If the refresh token is not provided we need to throw an error
+    return res.status(400).send("Please provide a refresh token");
   }
-}); 
+  refresh_token = String(refresh_token);
 
-gmailRouter.get("/mails/message", async (req, res) => {
-  try {
-    const messageId = String(req.query.messageId);
+  const accessToken = await getRefreshToken(refresh_token);
 
-    if (!messageId) {
-      return res.status(400).send("Please provide a valid messageId to get the specific mail");
-    }
-
-    if (!req.query.emailId) {
-      return res.status(400).send("Please provide a valid emailId");
-    }
-
-    const emailId = String(req.query.emailId);
-    const mail = await getSpecificMail(emailId, messageId);
-    if (!mail) {
-      // if no refresh token is present so we need to login again
-      return res.redirect("/google/gmail/auth");
-    }
-
-    res.send(mail);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error while getting mail for the provided emailId");
-  }
-}); 
-
-
-// Send some mails using the toEmailId to the fromEmailId 
-// Get the mail in this combination (from,to,messageId) 
-// So the mail in the messageId will be parsed and labeled 
-// And a reply mail will be sent to the user in toEmailId
-gmailRouter.get("/send",async (req,res) => {
-    try{
-      // get the content of the mail of the provided messageId
-      // put the { content,from,to} in the job queue
-      
-
-    }catch(err){
-
-    }
+  return res.status(200).send({
+    access_token: accessToken,
+  });
 });
+
+gmailRouter.get(
+  "/mails",
+  validateAccessToken,
+  getEmailIdFromToken,
+  async (req: RequestWithAccessTokenAndEmail, res) => {
+    try {
+      const maxCountMail = req.query.maxCountMail
+        ? Number(req.query.maxCountMail)
+        : 50;
+
+      const emailId = String(req.emailId);
+      const accessToken = String(req.accessToken);
+      const mails = await getMails(emailId, maxCountMail, accessToken);
+
+      return res.status(200).send(mails);
+    } catch (err) {
+      console.log(err);
+      res
+        .status(500)
+        .send("Error while getting mails for the provided emailId");
+    }
+  }
+);
+
+gmailRouter.get(
+  "/mails/message",
+  validateAccessToken,
+  getEmailIdFromToken,
+  async (req: RequestWithAccessTokenAndEmail, res) => {
+    try {
+      let messageId = req.query.messageId;
+
+      if (!messageId) {
+        return res
+          .status(400)
+          .send("Please provide a valid messageId to get the specific mail");
+      }
+      messageId = String(messageId);
+
+      const emailId = String(req.emailId);
+      const accessToken = String(req.accessToken);
+      const mail = await getMailFromMessageId(emailId, messageId, accessToken);
+
+      return res.send(mail);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Error while getting mail for the given message id");
+    }
+  }
+);
+
+// Here the fromEmailId is our reachInBox and the toEmailId is the customers to whom we want
+// to send business(autogenerated email)
+
+// Send some mails using the toEmailId to the fromEmailId
+// Get the mail in this combination (from,to,messageId)
+// So the mail in the messageId will be parsed and labeled
+// And a reply mail will be sent to the user in toEmailId
+gmailRouter.post(
+  "/send",
+  validateAccessToken,
+  getEmailIdFromToken,
+  async (req: RequestWithAccessTokenAndEmail, res) => {
+    try {
+      const messageId = String(req.query.messageId);
+
+      if (!messageId) {
+        return res
+          .status(400)
+          .send("Please provide a valid messageId to get the specific mail");
+      }
+
+      const emailId = String(req.emailId);
+      const accessToken = String(req.accessToken);
+
+      const jobId = await sendEmailInQueue(emailId, messageId, accessToken);
+
+      return res
+        .status(200)
+        .send(
+          `Reply mail for the messageId ${messageId} has been added to the queue ${jobId}`
+        );
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send("Error during queuing the send mail");
+    }
+  }
+);

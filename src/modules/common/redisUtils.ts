@@ -8,7 +8,7 @@ export const client = new Redis({
   db: process.env.REDIS_CACHE_DB ? Number(process.env.REDIS_CACHE_DB) : 1,
 });
 
-export const setValueToCache = async (key: string, value: string) => {
+export const setValueToCache = async (key: string, value: any) => {
   const cacheValue = JSON.stringify(value);
   let setCachedValue;
   setCachedValue = await client.set(key, cacheValue, "EX", Number(process.env.TOKEN_EXPIRY));

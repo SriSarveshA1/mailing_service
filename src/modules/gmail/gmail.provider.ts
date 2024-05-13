@@ -1,21 +1,13 @@
+import { addJobToQueue } from "../../jobs/producer";
 import { makeAxiosCall } from "../common/axiosUtils";
 import {
   ACCESS_TYPE_FOR_OAUTH,
   GET_METHOD,
+  POST_METHOD,
   SCOPE_FOR_OAUTH,
 } from "../common/constants";
-import { getValueFromCache, setValueToCache } from "../common/redisUtils";
 
-const { OAuth2Client } = require("google-auth-library");
-
-const redirectUri =
-  `${process.env.HOST}:${process.env.PORT}` + process.env.REDIRECT_URI_PATH;
-
-const oAuthClient = new OAuth2Client({
-  clientId: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  redirectUri: redirectUri,
-});
+import { oAuthClient } from "./googleAuthUtils";
 
 export function returnRedirectAuthUrl() {
   const authUrl = oAuthClient.generateAuthUrl({
@@ -32,40 +24,17 @@ export async function authenticateUser(code: string) {
 
   oAuthClient.setCredentials(tokens);
 
-  // Get user information
-  const userInfoResponse = await makeAxiosCall(
-    GET_METHOD,
-    "https://www.googleapis.com/oauth2/v2/userinfo",
-    accessToken
-  );
-
-  const userEmail = userInfoResponse.data.email;
-  const accessTokenKey = `access_token_${userEmail}`;
-  const refreshTokenKey = `refresh_token_${userEmail}`;
-
-  await setValueToCache(accessTokenKey, accessToken);
-  await setValueToCache(refreshTokenKey, refreshToken);
+  return {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  };
 }
 
-export async function getMails(emailId: string, maxCountMail: string | number) {
-  const accessTokenKey = `access_token_${emailId}`;
-  let accessToken = await getValueFromCache(accessTokenKey);
-
-  if (!accessToken) {
-    console.log("Getting access token from the refresh token");
-    // if no access token is present use the refresh token to get the access token
-    const refreshTokenKey = `refresh_token_${emailId}`;
-    const refreshToken = await getValueFromCache(refreshTokenKey);
-    if (!refreshToken) {
-      // if no refresh token is present then redirect to /gmail/auth
-      return false;
-    }
-    accessToken = await oAuthClient.getAccessToken();
-    if (accessToken) {
-      await setValueToCache(accessTokenKey, accessToken);
-    }
-  }
-
+export async function getMails(
+  emailId: string,
+  maxCountMail: string | number,
+  accessToken: string
+) {
   const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages?maxResults=${maxCountMail}`;
 
   const response = await makeAxiosCall(GET_METHOD, url, accessToken);
@@ -73,28 +42,45 @@ export async function getMails(emailId: string, maxCountMail: string | number) {
   return response.data;
 }
 
-export async function getSpecificMail(emailId: string,messageId:string) {
-  const accessTokenKey = `access_token_${emailId}`;
-  let accessToken = await getValueFromCache(accessTokenKey);
-
-  if (!accessToken) {
-    console.log("Getting access token from the refresh token");
-    // if no access token is present use the refresh token to get the access token
-    const refreshTokenKey = `refresh_token_${emailId}`;
-    const refreshToken = await getValueFromCache(refreshTokenKey);
-    if (!refreshToken) {
-      // if no refresh token is present then redirect to /gmail/auth
-      return false;
-    }
-    accessToken = await oAuthClient.getAccessToken();
-    if (accessToken) {
-      await setValueToCache(accessTokenKey, accessToken);
-    }
-  }
-
-  const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages/${messageId}`;
+export async function getMailFromMessageId(
+  emailId: string,
+  messageId: string,
+  accessToken: string
+) {
+  const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages/${messageId}?format=full`;
 
   const response = await makeAxiosCall(GET_METHOD, url, accessToken);
-
   return response.data;
+}
+
+export async function sendEmailInQueue(
+  emailId: string,
+  messageId: string,
+  accessToken: string
+) {
+  const job = {
+    fromEmailId: emailId,
+    messageId: messageId,
+    accessToken: accessToken,
+  };
+
+  return await addJobToQueue(job);
+}
+
+export async function getRefreshToken(refresh_token: string) {
+  const data = {
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    refresh_token: refresh_token,
+    grant_type: "refresh_token",
+  };
+
+  const response = await makeAxiosCall(
+    POST_METHOD,
+    "https://oauth2.googleapis.com/token",
+    refresh_token,
+    data
+  );
+
+  return response.data.access_token;
 }
