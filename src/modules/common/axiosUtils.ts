@@ -5,9 +5,9 @@ export async function makeAxiosCall(
   method: string,
   url: string,
   token: any,
-  data?:any
+  data?: any
 ) {
-  const config:AxiosRequest = {
+  const config: AxiosRequest = {
     method,
     url,
     headers: {
@@ -16,13 +16,10 @@ export async function makeAxiosCall(
     },
   };
 
-  if(data) {
+  if (data) {
     config.data = data;
   }
 
   const response = await axios(config);
   return response;
 }
-
-
-

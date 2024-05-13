@@ -2,6 +2,7 @@ import express from "express";
 import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
 import {
+  assignLabelToMail,
   authenticateUser,
   getMailFromMessageId,
   getMails,
@@ -15,6 +16,7 @@ import {
   validateAccessToken,
 } from "./middleware/oAuthMiddleware";
 import { RequestWithAccessTokenAndEmail } from "../../types";
+import { LABEL } from "../common/constants";
 require("dotenv").config();
 
 export const gmailRouter = express.Router();
@@ -40,22 +42,26 @@ gmailRouter.get("/auth/callback", async (req, res) => {
   }
 });
 
-gmailRouter.get("/auth/getAccessToken", async (req, res) => {
+gmailRouter.get("/auth/access-token", async (req, res) => {
   // Get access token from refresh token
+  try {
+    let refresh_token = req.query.refresh_token;
 
-  let refresh_token = req.query.refresh_token;
+    if (!refresh_token) {
+      // If the refresh token is not provided we need to throw an error
+      return res.status(400).send("Please provide a refresh token");
+    }
+    refresh_token = String(refresh_token);
 
-  if (!refresh_token) {
-    // If the refresh token is not provided we need to throw an error
-    return res.status(400).send("Please provide a refresh token");
+    const accessToken = await getRefreshToken(refresh_token);
+
+    return res.status(200).send({
+      access_token: accessToken,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Error while getting new access token: ");
   }
-  refresh_token = String(refresh_token);
-
-  const accessToken = await getRefreshToken(refresh_token);
-
-  return res.status(200).send({
-    access_token: accessToken,
-  });
 });
 
 gmailRouter.get(
@@ -122,13 +128,14 @@ gmailRouter.post(
   getEmailIdFromToken,
   async (req: RequestWithAccessTokenAndEmail, res) => {
     try {
-      const messageId = String(req.query.messageId);
+      let messageId = req.query.messageId;
 
       if (!messageId) {
         return res
           .status(400)
           .send("Please provide a valid messageId to get the specific mail");
       }
+      messageId = String(messageId);
 
       const emailId = String(req.emailId);
       const accessToken = String(req.accessToken);
@@ -143,6 +150,70 @@ gmailRouter.post(
     } catch (err) {
       console.log(err);
       return res.status(500).send("Error during queuing the send mail");
+    }
+  }
+);
+
+gmailRouter.post(
+  "/set-label",
+  validateAccessToken,
+  getEmailIdFromToken,
+  async (req: RequestWithAccessTokenAndEmail, res) => {
+    try {
+      let messageId = req.query.messageId;
+
+      if (!messageId) {
+        return res
+          .status(400)
+          .send("Please provide a valid messageId to get the specific mail");
+      }
+      messageId = String(messageId);
+
+      let label = req.query.label;
+
+      if (!label) {
+        return res
+          .status(400)
+          .send("Please provide a valid label to assign it to a mail");
+      }
+      label = String(label);
+
+      let labelId: string;
+
+      switch(label){
+        case "Interested":
+          labelId = LABEL.INTERESTED.id
+          break;
+        case "More_Information":
+          labelId = LABEL.MORE_INFORMATION.id
+          break;
+        case "Not_Interested":
+          labelId = LABEL.MORE_INFORMATION.id
+          break;
+        default:
+          return res
+          .status(400)
+          .send("Please provide a valid label to assign it to a mail");
+      }
+
+      const emailId = String(req.emailId);
+      const accessToken = String(req.accessToken);
+
+      const assignedLabel = await assignLabelToMail(
+        emailId,
+        messageId,
+        accessToken,
+        labelId
+      );
+
+      console.log(assignedLabel);
+      
+      return res
+        .status(200)
+        .send(`Label ${label} has been assigned to ${messageId}`);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send("Error during setting the label");
     }
   }
 );

@@ -14,6 +14,10 @@ const sendMailWorker = new Worker(
   "email-queue",
   async (job: any) => {
     let { toEmailId, mailContent, messageId } = job.data;
+    
+    
+
+
   },
   {
     connection: client,

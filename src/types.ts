@@ -32,7 +32,7 @@ export interface AxiosRequest{
     method:string,
     url:string,
     headers: {
-      Authorization: string,
+      Authorization?: string,
       "Content-Type": string,
     },
     data?:any
