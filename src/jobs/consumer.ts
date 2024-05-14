@@ -27,14 +27,6 @@ import {
 } from "../modules/gmail/googleAuthUtils";
 import { OAuth2Client } from "google-auth-library";
 
-// 1. get the content of the mail of specified messageId
-// 2. parse the content of the mail
-// 3. Generate the label based on the content of the mail
-// 4. Assign the label to the given messageId
-// 5. Generate the response from the content of the mail
-// 6. Send the mail to the specified replyMailId with the generated message
-// 7. Send the mail to the developer if any job is failed
-
 const sendMailWorker = new Worker(
   "email-queue",
   async (job: any) => {
