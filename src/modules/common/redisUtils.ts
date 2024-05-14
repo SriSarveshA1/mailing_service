@@ -9,24 +9,3 @@ export const client = new Redis({
 });
 
 
-export const setValueToCache = async (key: string, value: any) => {
-  const cacheValue = JSON.stringify(value);
-  let setCachedValue;
-  setCachedValue = await client.set(key, cacheValue, "EX", Number(process.env.TOKEN_EXPIRY));
-
-  return setCachedValue;
-};
-
-export const getValueFromCache = async (key: string) => {
-  let cachedValue = await client.get(key);
-  if (cachedValue) {
-    cachedValue = JSON.parse(cachedValue);
-    return cachedValue;
-  }
-  return cachedValue;
-};
-
-export const removeValueFromCache = async (key: []) => {
-  const removedValue = await client.del(...key);
-  return removedValue;
-};
