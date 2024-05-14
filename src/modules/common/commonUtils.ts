@@ -87,15 +87,6 @@ export function getLabelIdFromLabel(label: string) {
   return labelId;
 }
 
-// export function findTheFirstMatchingLabelId(labelIds: string) {
-//   for(let labelId of labelIds) {
-//     if(customLabelIds.includes(labelId)){
-//       return labelId;
-//     }
-
-//   }
-// }
-
 export function replyMessageFromLabel(analyzedLabel: string) {
   let replyMailBody: string = "";
   let replyMailSubject: string = "";
