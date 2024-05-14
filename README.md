@@ -171,5 +171,5 @@ npm run worker
 
 ##  Acknowledgments
 
-- List any resources, contributors, inspiration, etc. here.
+- Click [here](https://drive.google.com/file/d/1KXIvHk3ez-PQsdCa7tWo3yd0XuwRAD-t/view?usp=sharing) to access the Postman collection.
 ---
