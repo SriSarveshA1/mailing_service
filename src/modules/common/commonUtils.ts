@@ -1,3 +1,15 @@
+import { ParsedMailContent } from "../../types";
+import {
+  customLabelIds,
+  INTERESTED_MAIL_BODY,
+  INTERESTED_MAIL_SUBJECT,
+  LABEL,
+  MORE_INFORMATION_MAIL_BODY,
+  MORE_INFORMATION_MAIL_SUBJECT,
+  NOT_INTERESTED_MAIL_BODY,
+  NOT_INTERESTED_MAIL_SUBJECT,
+} from "./constants";
+
 function retrieveEmailAddress(content: string): string {
   let startIndex = -1;
   let endIndex = -1;
@@ -15,7 +27,8 @@ function retrieveEmailAddress(content: string): string {
   return content.substring(startIndex + 1, endIndex);
 }
 
-export async function parseMailContent(content: any) {
+export function parseMailContent(content: any) {
+  const labelIds = content.labelIds;
   const payload = content.payload;
   const headers = payload.headers;
 
@@ -41,12 +54,68 @@ export async function parseMailContent(content: any) {
 
   let snippet = content.snippet;
 
-  const parsedEmailContent:{replyMailId:string,subject:string,snippet:string,body:string} = {
+  const parsedEmailContent: ParsedMailContent = {
     replyMailId: fromMailId,
     subject,
     snippet,
     body: textContent,
+    labelIds,
   };
 
   return parsedEmailContent;
+}
+
+export function getLabelIdFromLabel(label: string) {
+  let labelId: string;
+
+  switch (label) {
+    case "Interested":
+      labelId = LABEL.INTERESTED.id;
+      break;
+    case "More_Information" || "More Information":
+      labelId = LABEL.MORE_INFORMATION.id;
+      break;
+    case "Not_Interested" || "Not Interested":
+      labelId = LABEL.NOT_INTERESTED.id;
+      break;
+    default:
+      return undefined;
+  }
+
+  return labelId;
+}
+
+// export function findTheFirstMatchingLabelId(labelIds: string) {
+//   for(let labelId of labelIds) {
+//     if(customLabelIds.includes(labelId)){
+//       return labelId;
+//     }
+
+//   }
+// }
+
+export function replyMessageFromLabel(analyzedLabel: string) {
+  let replyMailBody: string = "";
+  let replyMailSubject: string = "";
+
+  switch (analyzedLabel) {
+    case "Interested":
+      replyMailSubject = INTERESTED_MAIL_SUBJECT;
+      replyMailBody = INTERESTED_MAIL_BODY;
+      break;
+
+    case "Not Interested":
+      replyMailSubject = NOT_INTERESTED_MAIL_SUBJECT;
+      replyMailBody = NOT_INTERESTED_MAIL_BODY;
+      break;
+
+    default:
+      replyMailSubject = MORE_INFORMATION_MAIL_SUBJECT;
+      replyMailBody = MORE_INFORMATION_MAIL_BODY;
+  }
+
+  return {
+    replyMailSubject,
+    replyMailBody,
+  };
 }

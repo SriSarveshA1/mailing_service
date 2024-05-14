@@ -29,9 +29,11 @@ export async function getAiResponse(prompt: string) {
   //return modelResponse.data.candidates;
 }
 
-export async function analyzeTheLabelOfTheContent(mailContent: string) {
-  const label = await getAiResponse(
-    `Analyze this mail content and provide a label it like Interested,Not Interested, MoreInformation based on the content "${mailContent}"`
+export async function analyzeTheLabelOfTheContent(mailBody: string) {
+  const label:string = await getAiResponse(
+    `Analyze this mail content and provide a label like Interested, Not Interested, More Information based on the content "${mailBody}"`
   );
   return label;
 }
+
+

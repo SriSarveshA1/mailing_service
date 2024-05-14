@@ -30,11 +30,11 @@ export async function validateAccessToken(
     await makeAxiosCall(GET_METHOD, url, accessToken);
 
     req.accessToken = accessToken;
+    oAuthClient.setCredentials({ access_token: accessToken });
 
     next();
   } catch (error: any) {
-
-    if(error.response.data.error == 'invalid_token'){
+    if (error.response.data.error == "invalid_token") {
       return res.status(400).send("Invalid token provided");
     }
 

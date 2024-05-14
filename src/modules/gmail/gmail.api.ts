@@ -4,20 +4,20 @@ import nodemailer from "nodemailer";
 import {
   assignLabelToMail,
   authenticateUser,
+  getAllLabelsForEmailId,
   getMailFromMessageId,
   getMails,
   getRefreshToken,
   returnRedirectAuthUrl,
   sendEmailInQueue,
 } from "./gmail.provider";
-import { parseMailContent } from "../common/commonUtils";
+import { getLabelIdFromLabel, parseMailContent } from "../common/commonUtils";
 import {
   getEmailIdFromToken,
   validateAccessToken,
 } from "./middleware/oAuthMiddleware";
 import { RequestWithAccessTokenAndEmail } from "../../types";
-import { LABEL } from "../common/constants";
-require("dotenv").config();
+
 
 export const gmailRouter = express.Router();
 
@@ -154,6 +154,30 @@ gmailRouter.post(
   }
 );
 
+gmailRouter.get(
+  "/get-labels",
+  validateAccessToken,
+  getEmailIdFromToken,
+  async (req: RequestWithAccessTokenAndEmail, res) => {
+    const emailId = String(req.emailId);
+    const accessToken = String(req.accessToken);
+
+    const response = await getAllLabelsForEmailId(
+      emailId,
+
+      accessToken
+    );
+
+    const labels = response.data.labels;
+
+    console.log(labels);
+
+    return res
+      .status(200)
+      .send(labels);
+  }
+);
+
 gmailRouter.post(
   "/set-label",
   validateAccessToken,
@@ -176,25 +200,8 @@ gmailRouter.post(
           .status(400)
           .send("Please provide a valid label to assign it to a mail");
       }
+
       label = String(label);
-
-      let labelId: string;
-
-      switch(label){
-        case "Interested":
-          labelId = LABEL.INTERESTED.id
-          break;
-        case "More_Information":
-          labelId = LABEL.MORE_INFORMATION.id
-          break;
-        case "Not_Interested":
-          labelId = LABEL.MORE_INFORMATION.id
-          break;
-        default:
-          return res
-          .status(400)
-          .send("Please provide a valid label to assign it to a mail");
-      }
 
       const emailId = String(req.emailId);
       const accessToken = String(req.accessToken);
@@ -203,11 +210,11 @@ gmailRouter.post(
         emailId,
         messageId,
         accessToken,
-        labelId
+        label
       );
 
-      console.log(assignedLabel);
-      
+      //console.log(assignedLabel);
+
       return res
         .status(200)
         .send(`Label ${label} has been assigned to ${messageId}`);

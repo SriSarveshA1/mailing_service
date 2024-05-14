@@ -1,5 +1,6 @@
 import { addJobToQueue } from "../../jobs/producer";
 import { makeAxiosCall } from "../common/axiosUtils";
+import { getLabelIdFromLabel } from "../common/commonUtils";
 import {
   ACCESS_TYPE_FOR_OAUTH,
   GET_METHOD,
@@ -8,7 +9,6 @@ import {
 } from "../common/constants";
 
 import { oAuthClient } from "./googleAuthUtils";
-import { LABEL } from '../common/constants';
 
 export function returnRedirectAuthUrl() {
   const authUrl = oAuthClient.generateAuthUrl({
@@ -83,25 +83,34 @@ export async function getRefreshToken(refresh_token: string) {
     data
   );
 
+  oAuthClient.setCredentials(response.data);
+  console.log(response);
   return response.data.access_token;
 }
-
 
 export async function assignLabelToMail(
   emailId: string,
   messageId: string,
   accessToken: string,
-  labelId: string
+  label: string
 ) {
-
   const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/messages/${messageId}/modify`;
 
-
+  const labelId = getLabelIdFromLabel(label);
 
   const data = {
     addLabelIds: [`${labelId}`],
-    removeLabelIds: []
+    removeLabelIds: [],
   };
 
   return await makeAxiosCall(POST_METHOD, url, accessToken, data);
+}
+
+export async function getAllLabelsForEmailId(
+  emailId: string,
+  accessToken: string
+) {
+  const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/labels`;
+
+  return await makeAxiosCall(GET_METHOD, url, accessToken);
 }

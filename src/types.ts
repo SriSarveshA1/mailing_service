@@ -15,11 +15,12 @@ export interface RequestWithAccessTokenAndEmail
   emailId?: string;
 }
 
-export interface MailContent {
+export interface ParsedMailContent {
   replyMailId: string;
   subject: string;
-  snippet: string;
+  snippet?: string;
   body: string;
+  labelIds?: string[];
 }
 
 export interface JobInQueue {
@@ -28,12 +29,20 @@ export interface JobInQueue {
   accessToken: string;
 }
 
-export interface AxiosRequest{
-    method:string,
-    url:string,
-    headers: {
-      Authorization?: string,
-      "Content-Type": string,
-    },
-    data?:any
+export interface AxiosRequest {
+  method: string;
+  url: string;
+  headers: {
+    Authorization?: string;
+    "Content-Type": string;
+  };
+  data?: any;
 }
+
+export interface ReplyMailBodyAndSubject {
+  replyMailSubject: string;
+  replyMailBody: string;
+  senderMailId: string;
+  replyMailId: string;
+}
+
