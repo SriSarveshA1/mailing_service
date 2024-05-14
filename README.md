@@ -26,19 +26,6 @@
 </p>
 <hr>
 
-##  Quick Links
-
-> - [ Overview](#-overview)
-> - [ Features](#-features)
-> - [ Repository Structure](#-repository-structure)
-> - [ Modules](#-modules)
-> - [ Getting Started](#-getting-started)
->   - [ Installation](#-installation)
->   - [ Running mailing_service](#-running-mailing_service)
-> - [ Acknowledgments](#-acknowledgments)
-
----
-
 ##  Overview
 
 It is a tool designed to streamline the process of managing and responding to emails by generating automated responses. Built with efficiency and customization in mind, this tool leverages advanced natural language processing (NLP) techniques to understand the context and intent of incoming emails, enabling it to craft relevant replies.
