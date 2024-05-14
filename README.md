@@ -50,7 +50,7 @@ It is a tool designed to streamline the process of managing and responding to em
 1. OAuth Integration: Integrates OAuth access to Gmail for secure email access.
 2. Email Context Analysis: Utilizes Gemini's API to understand the context of incoming emails and assign automatic labels (Interested, Not Interested, More Information).
 3. Automated Replies: Generates and sends automated replies based on email context using Gemini's API.
-4. Task Scheduling: Implements BullMQ as the task scheduler for efficient task management.
+4. Task Scheduling: Implements BullMQ as the job scheduler for an efficient email-sending process using a queue.
 
 ---
 
@@ -90,7 +90,7 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                               | Summary                                       |
 | ---                                                                                                | ---                                           |
-| [tsconfig.json](https://github.com/SriSarveshA1/mailing_service/blob/master/tsconfig.json)         | HTTP error 401 for prompt `tsconfig.json`     |
+| [tsconfig.json](https://github.com/SriSarveshA1/mailing_service/blob/master/tsconfig.json)         | A `tsconfig.json` file specifies the root files and the compiler options required to compile a TypeScript project.     |
 | [package.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package.json)           | HTTP error 401 for prompt `package.json`      |
 | [index.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/index.ts)                   | HTTP error 401 for prompt `index.ts`          |
 | [package-lock.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package-lock.json) | HTTP error 401 for prompt `package-lock.json` |
