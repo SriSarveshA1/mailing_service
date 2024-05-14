@@ -14,9 +14,10 @@ import {
 import { getLabelIdFromLabel, parseMailContent } from "../common/commonUtils";
 import {
   getEmailIdFromToken,
+  setLongLiveToken,
   validateAccessToken,
 } from "./middleware/oAuthMiddleware";
-import { RequestWithAccessTokenAndEmail } from "../../types";
+import { RequestWithTokensAndEmail } from "../../types";
 
 
 export const gmailRouter = express.Router();
@@ -68,7 +69,7 @@ gmailRouter.get(
   "/mails",
   validateAccessToken,
   getEmailIdFromToken,
-  async (req: RequestWithAccessTokenAndEmail, res) => {
+  async (req: RequestWithTokensAndEmail, res) => {
     try {
       const maxCountMail = req.query.maxCountMail
         ? Number(req.query.maxCountMail)
@@ -92,7 +93,7 @@ gmailRouter.get(
   "/mails/message",
   validateAccessToken,
   getEmailIdFromToken,
-  async (req: RequestWithAccessTokenAndEmail, res) => {
+  async (req: RequestWithTokensAndEmail, res) => {
     try {
       let messageId = req.query.messageId;
 
@@ -124,9 +125,10 @@ gmailRouter.get(
 // And a reply mail will be sent to the user in toEmailId
 gmailRouter.post(
   "/send",
+  setLongLiveToken,
   validateAccessToken,
   getEmailIdFromToken,
-  async (req: RequestWithAccessTokenAndEmail, res) => {
+  async (req: RequestWithTokensAndEmail, res) => {
     try {
       let messageId = req.query.messageId;
 
@@ -138,9 +140,10 @@ gmailRouter.post(
       messageId = String(messageId);
 
       const emailId = String(req.emailId);
-      const accessToken = String(req.accessToken);
 
-      const jobId = await sendEmailInQueue(emailId, messageId, accessToken);
+      const refreshToken = String(req.refreshToken);
+
+      const jobId = await sendEmailInQueue(emailId, messageId, refreshToken);
 
       return res
         .status(200)
@@ -158,7 +161,7 @@ gmailRouter.get(
   "/get-labels",
   validateAccessToken,
   getEmailIdFromToken,
-  async (req: RequestWithAccessTokenAndEmail, res) => {
+  async (req: RequestWithTokensAndEmail, res) => {
     const emailId = String(req.emailId);
     const accessToken = String(req.accessToken);
 
@@ -182,7 +185,7 @@ gmailRouter.post(
   "/set-label",
   validateAccessToken,
   getEmailIdFromToken,
-  async (req: RequestWithAccessTokenAndEmail, res) => {
+  async (req: RequestWithTokensAndEmail, res) => {
     try {
       let messageId = req.query.messageId;
 

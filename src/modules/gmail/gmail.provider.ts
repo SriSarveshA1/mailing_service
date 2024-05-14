@@ -1,6 +1,8 @@
+import { OAuth2 } from "nodemailer/lib/smtp-connection";
 import { addJobToQueue } from "../../jobs/producer";
 import { makeAxiosCall } from "../common/axiosUtils";
 import { getLabelIdFromLabel } from "../common/commonUtils";
+import { google } from "googleapis";
 import {
   ACCESS_TYPE_FOR_OAUTH,
   GET_METHOD,
@@ -9,6 +11,9 @@ import {
 } from "../common/constants";
 
 import { oAuthClient } from "./googleAuthUtils";
+import { OAuth2Client } from "google-auth-library";
+import { ReplyMailBodyAndSubject } from "../../types";
+import nodemailer from "nodemailer";
 
 export function returnRedirectAuthUrl() {
   const authUrl = oAuthClient.generateAuthUrl({
@@ -57,12 +62,12 @@ export async function getMailFromMessageId(
 export async function sendEmailInQueue(
   emailId: string,
   messageId: string,
-  accessToken: string
+  refreshToken: string
 ) {
   const job = {
     fromEmailId: emailId,
     messageId: messageId,
-    accessToken: accessToken,
+    refreshToken,
   };
 
   return await addJobToQueue(job);
@@ -98,6 +103,8 @@ export async function assignLabelToMail(
 
   const labelId = getLabelIdFromLabel(label);
 
+  console.log("labelId: " + labelId);
+
   const data = {
     addLabelIds: [`${labelId}`],
     removeLabelIds: [],
@@ -113,4 +120,39 @@ export async function getAllLabelsForEmailId(
   const url = `https://gmail.googleapis.com/gmail/v1/users/${emailId}/labels`;
 
   return await makeAxiosCall(GET_METHOD, url, accessToken);
+}
+
+export async function sendEmail(
+  inputForReplyMail: ReplyMailBodyAndSubject,
+  refreshToken: string,
+  accessToken: string
+) {
+  const rawMessage = [
+    `From: me`,
+    `To: ${inputForReplyMail.replyMailId}`,
+    `Subject: ${inputForReplyMail.replyMailSubject}`,
+    ``,
+    inputForReplyMail.replyMailBody,
+  ].join("\n");
+
+  const encodedMessage = Buffer.from(rawMessage)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "-")
+    .replace(/=+$/, "");
+
+  oAuthClient.setCredentials({
+    refresh_token: refreshToken,
+    access_token: accessToken,
+  });
+
+  const gmail = google.gmail({ version: "v1", auth: oAuthClient });
+
+  await gmail.users.messages.send({
+    userId: "me",
+    requestBody: {
+      raw: encodedMessage,
+    },
+  });
+
 }

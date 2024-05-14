@@ -66,20 +66,22 @@ export function parseMailContent(content: any) {
 }
 
 export function getLabelIdFromLabel(label: string) {
-  let labelId: string;
+  let labelId: string|undefined;
 
-  switch (label) {
+  switch (label.trim()) {
     case "Interested":
       labelId = LABEL.INTERESTED.id;
       break;
-    case "More_Information" || "More Information":
+    case "More_Information":
+    case "More Information":
       labelId = LABEL.MORE_INFORMATION.id;
       break;
-    case "Not_Interested" || "Not Interested":
+    case "Not_Interested":
+    case "Not Interested":
       labelId = LABEL.NOT_INTERESTED.id;
       break;
     default:
-      return undefined;
+      labelId = undefined;
   }
 
   return labelId;

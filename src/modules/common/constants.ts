@@ -4,6 +4,7 @@ export const SCOPE_FOR_OAUTH = [
   "https://www.googleapis.com/auth/gmail.modify",
   "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/gmail.compose",
+  "https://www.googleapis.com/auth/gmail.send"
 ];
 
 export const ACCESS_TYPE_FOR_OAUTH = "offline";

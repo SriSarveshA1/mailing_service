@@ -4,7 +4,7 @@
 
 import {
   RequestWithAccessToken,
-  RequestWithAccessTokenAndEmail,
+  RequestWithTokensAndEmail,
 } from "../../../types";
 import { makeAxiosCall } from "../../common/axiosUtils";
 import { GET_METHOD } from "../../common/constants";
@@ -43,7 +43,7 @@ export async function validateAccessToken(
 }
 
 export async function getEmailIdFromToken(
-  req: RequestWithAccessTokenAndEmail,
+  req: RequestWithTokensAndEmail,
   res: express.Response,
   next: express.NextFunction
 ) {
@@ -65,4 +65,26 @@ export async function getEmailIdFromToken(
       .status(500)
       .send("Error while retrieving emailId using access token");
   }
+}
+
+export async function setLongLiveToken(
+  req: RequestWithTokensAndEmail,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  let refresh_token = req.headers.refresh_token;
+  if (!refresh_token) {
+    return res
+      .status(400)
+      .end("Please provide a valid long-live refresh token");
+  }
+
+  refresh_token = String(refresh_token);
+
+  oAuthClient.setCredentials({
+    refresh_token: refresh_token,
+  });
+
+  req.refreshToken = String(refresh_token);
+  next();
 }

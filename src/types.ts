@@ -1,4 +1,5 @@
 import express from "express";
+import { OAuth2Client } from "google-auth-library";
 
 export interface RequestWithAccessToken extends express.Request {
   accessToken?: string;
@@ -8,11 +9,12 @@ export interface RequestWithEmail extends express.Request {
   emailId?: string;
 }
 
-export interface RequestWithAccessTokenAndEmail
+export interface RequestWithTokensAndEmail
   extends RequestWithAccessToken,
     RequestWithEmail {
   accessToken?: string;
   emailId?: string;
+  refreshToken?: string;
 }
 
 export interface ParsedMailContent {
@@ -26,7 +28,7 @@ export interface ParsedMailContent {
 export interface JobInQueue {
   fromEmailId: string;
   messageId: string;
-  accessToken: string;
+  refreshToken: string;
 }
 
 export interface AxiosRequest {
