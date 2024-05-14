@@ -9,13 +9,7 @@ export async function addJobToQueue(job: JobInQueue) {
   //console.log(`${job.fromEmailId}_${job.messageId}`)
 
   const jobOptions = {
-    attempts: 5, // Number of retries
-    backoff: {
-      type: "exponential", // or 'fixed'
-      delay: 1000, // Delay in milliseconds
-    },
     removeOnComplete: true, // Remove job from queue on successful completion
-    removeOnFail: false, // Keep the job in the queue if it fails
   };
   const res = await sendMailQueue.add(
     `${job.fromEmailId}_${job.messageId}`,
