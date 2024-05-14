@@ -66,7 +66,7 @@ export function parseMailContent(content: any) {
 }
 
 export function getLabelIdFromLabel(label: string) {
-  let labelId: string|undefined;
+  let labelId: string | undefined;
 
   switch (label.trim()) {
     case "Interested":
@@ -87,28 +87,21 @@ export function getLabelIdFromLabel(label: string) {
   return labelId;
 }
 
-export function replyMessageFromLabel(analyzedLabel: string) {
-  let replyMailBody: string = "";
+export function getSubjectFromLabel(analyzedLabel: string) {
   let replyMailSubject: string = "";
 
   switch (analyzedLabel) {
     case "Interested":
       replyMailSubject = INTERESTED_MAIL_SUBJECT;
-      replyMailBody = INTERESTED_MAIL_BODY;
       break;
 
     case "Not Interested":
       replyMailSubject = NOT_INTERESTED_MAIL_SUBJECT;
-      replyMailBody = NOT_INTERESTED_MAIL_BODY;
       break;
 
     default:
       replyMailSubject = MORE_INFORMATION_MAIL_SUBJECT;
-      replyMailBody = MORE_INFORMATION_MAIL_BODY;
   }
 
-  return {
-    replyMailSubject,
-    replyMailBody,
-  };
+  return replyMailSubject;
 }

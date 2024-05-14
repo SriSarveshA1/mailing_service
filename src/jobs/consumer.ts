@@ -15,10 +15,13 @@ import {
 } from "../modules/gmail/gmail.provider";
 import {
   getLabelIdFromLabel,
+  getSubjectFromLabel,
   parseMailContent,
-  replyMessageFromLabel,
 } from "../modules/common/commonUtils";
-import { analyzeTheLabelOfTheContent } from "../modules/common/geminiUtils";
+import {
+  analyzeTheLabelOfTheContent,
+  constructTheResponse,
+} from "../modules/common/geminiUtils";
 import { ParsedMailContent, ReplyMailBodyAndSubject } from "../types";
 import {
   getNewAccessToken,
@@ -55,12 +58,22 @@ const sendMailWorker = new Worker(
         analyzedLabel
       );
 
-      const constructedReply = replyMessageFromLabel(analyzedLabel);
+      const product_name = process.env.PRODUCT_NAME
+        ? String(process.env.PRODUCT_NAME)
+        : "ReachInBox";
+
+      const constructedReply = await constructTheResponse(
+        parsedEmailContent.body,
+        analyzedLabel,
+        product_name
+      );
+
+      const subject = getSubjectFromLabel(analyzedLabel);
 
       const inputForReplyMail: ReplyMailBodyAndSubject = {
         replyMailId: parsedEmailContent.replyMailId,
-        replyMailSubject: constructedReply.replyMailSubject,
-        replyMailBody: constructedReply.replyMailBody,
+        replyMailSubject: subject,
+        replyMailBody: constructedReply,
         senderMailId: fromEmailId,
       };
 
