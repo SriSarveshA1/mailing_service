@@ -135,12 +135,6 @@ It is a tool designed to streamline the process of managing and responding to em
 
 ##  Getting Started
 
-***Requirements***
-
-Ensure you have the following dependencies installed on your system:
-
-* **TypeScript**: `version x.y.z`
-
 ###  Installation
 
 1. Clone the mailing_service repository:
@@ -158,15 +152,21 @@ cd mailing_service
 3. Install the dependencies:
 
 ```sh
-npm install
+npm install 
 ```
 
 ###  Running mailing_service
 
 Use the following command to run mailing_service:
 
+1. Execute this command to compile the typescript files and start the express server.
 ```sh
-npm run build && node dist/main.js
+npm start
+```
+
+2. Execute this command to start the worker in another terminal.
+```sh
+npm run worker
 ```
 
 ##  Acknowledgments
