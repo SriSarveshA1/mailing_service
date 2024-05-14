@@ -38,7 +38,7 @@ export const INTERESTED_MAIL_SUBJECT = "Request for Product Demo";
 export const INTERESTED_MAIL_BODY = `
 Dear Customer,
 
-Thank you for reaching out and expressing your interest in [Company Name] and our products. We're thrilled to learn about your enthusiasm!
+Thank you for reaching out and expressing your interest in our company and our products. We're thrilled to learn about your enthusiasm!
 
 We would be delighted to provide you with a personalized demonstration of our product. To ensure we tailor the demo to your specific needs and requirements, could you please suggest a few dates and times that work best for you? Our team will do their utmost to accommodate your schedule.
 

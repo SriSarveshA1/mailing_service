@@ -26,7 +26,6 @@ export async function getAiResponse(prompt: string) {
   });
 
   return modelResponse.data.candidates[0].content.parts[0].text;
-  //return modelResponse.data.candidates;
 }
 
 export async function analyzeTheLabelOfTheContent(mailBody: string) {
