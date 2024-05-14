@@ -101,7 +101,7 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                 | Summary                                  |
 | ---                                                                                  | ---                                      |
-| [types.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/types.ts) | HTTP error 401 for prompt `src/types.ts` |
+| [types.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/types.ts) | It contains the common types that is used across the application |
 
 </details>
 
