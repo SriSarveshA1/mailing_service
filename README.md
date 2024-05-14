@@ -90,10 +90,10 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                               | Summary                                       |
 | ---                                                                                                | ---                                           |
-| [tsconfig.json](https://github.com/SriSarveshA1/mailing_service/blob/master/tsconfig.json)         | A `tsconfig.json` file specifies the root files and the compiler options required to compile a TypeScript project.     |
-| [package.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package.json)           | A `package.json` file specifies metadata, dependencies, scripts, and configurations required for the project.     |
-| [index.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/index.ts)                   | HTTP error 401 for prompt `index.ts`          |
-| [package-lock.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package-lock.json) | HTTP error 401 for prompt `package-lock.json` |
+| [tsconfig.json](https://github.com/SriSarveshA1/mailing_service/blob/master/tsconfig.json)         | Specifies the root files and the compiler options required to compile a TypeScript project.     |
+| [package.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package.json)           | Specifies metadata, dependencies, scripts, and configurations required for the project.     |
+| [index.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/index.ts)                   | It is the entry point of our express application |
+| [package-lock.json](https://github.com/SriSarveshA1/mailing_service/blob/master/package-lock.json) | It contains installations of project dependencies by locking down their versions and maintaining a snapshot of the entire dependency tree.|
 
 </details>
 
