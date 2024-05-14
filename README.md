@@ -171,5 +171,5 @@ npm run worker
 
 ##  Acknowledgments
 
-- Click [here](https://drive.google.com/file/d/1KXIvHk3ez-PQsdCa7tWo3yd0XuwRAD-t/view?usp=sharing) to access the Postman collection.
+- Click [here](https://drive.google.com/file/d/1KXIvHk3ez-PQsdCa7tWo3yd0XuwRAD-t/view?usp=sharing) to access the Postman collection to see all the api endpoints along with the description.
 ---
