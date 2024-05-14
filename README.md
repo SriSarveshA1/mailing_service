@@ -101,7 +101,7 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                 | Summary                                  |
 | ---                                                                                  | ---                                      |
-| [types.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/types.ts) | It contains the common types that is used across the application |
+| [types.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/types.ts) | It contains the common types that are used across the application. |
 
 </details>
 
@@ -109,8 +109,8 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                            | Summary                                          |
 | ---                                                                                             | ---                                              |
-| [consumer.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/jobs/consumer.ts) | HTTP error 401 for prompt `src/jobs/consumer.ts` |
-| [producer.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/jobs/producer.ts) | HTTP error 401 for prompt `src/jobs/producer.ts` |
+| [consumer.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/jobs/consumer.ts) | It contains the functions that process the jobs from the queue. |
+| [producer.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/jobs/producer.ts) | It contains the functions that add jobs to the queue. |
 
 </details>
 
@@ -118,9 +118,9 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                                                   | Summary                                                          |
 | ---                                                                                                                    | ---                                                              |
-| [gmail.api.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/gmail.api.ts)             | HTTP error 401 for prompt `src/modules/gmail/gmail.api.ts`       |
-| [googleAuthUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/googleAuthUtils.ts) | HTTP error 401 for prompt `src/modules/gmail/googleAuthUtils.ts` |
-| [gmail.provider.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/gmail.provider.ts)   | HTTP error 401 for prompt `src/modules/gmail/gmail.provider.ts`  |
+| [gmail.api.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/gmail.api.ts)             | It contains all the api routes that are part of the core functionalities      |
+| [googleAuthUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/googleAuthUtils.ts) | It contain the util function required during the Auth process |
+| [gmail.provider.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/gmail.provider.ts)   | It contains the business logic for all the apis.  |
 
 </details>
 
@@ -128,7 +128,7 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                                                              | Summary                                                                     |
 | ---                                                                                                                               | ---                                                                         |
-| [oAuthMiddleware.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/middleware/oAuthMiddleware.ts) | HTTP error 401 for prompt `src/modules/gmail/middleware/oAuthMiddleware.ts` |
+| [oAuthMiddleware.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/gmail/middleware/oAuthMiddleware.ts) | It contains all the authentication-related middleware that we can use before executing the providers |
 
 </details>
 
@@ -136,11 +136,11 @@ It is a tool designed to streamline the process of managing and responding to em
 
 | File                                                                                                            | Summary                                                       |
 | ---                                                                                                             | ---                                                           |
-| [redisUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/redisUtils.ts)   | HTTP error 401 for prompt `src/modules/common/redisUtils.ts`  |
-| [axiosUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/axiosUtils.ts)   | HTTP error 401 for prompt `src/modules/common/axiosUtils.ts`  |
-| [constants.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/constants.ts)     | HTTP error 401 for prompt `src/modules/common/constants.ts`   |
-| [commonUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/commonUtils.ts) | HTTP error 401 for prompt `src/modules/common/commonUtils.ts` |
-| [geminiUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/geminiUtils.ts) | HTTP error 401 for prompt `src/modules/common/geminiUtils.ts` |
+| [redisUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/redisUtils.ts)   | It contains the redis initialization and other utils. |
+| [axiosUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/axiosUtils.ts)   | It contains the util methods to perform api calls using axios. |
+| [constants.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/constants.ts)     | It contains the constants strings that we use across the application   |
+| [commonUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/commonUtils.ts) | It contains all the common util functions that we use across the application |
+| [geminiUtils.ts](https://github.com/SriSarveshA1/mailing_service/blob/master/src/modules/common/geminiUtils.ts) | It contains all the utils used for interacting gemini ai.  |
 
 </details>
 
